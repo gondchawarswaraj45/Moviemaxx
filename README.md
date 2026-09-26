@@ -1,4 +1,4 @@
-# 🍿 Moviemaxx PRO 2.0 | Multi-Agent Movie Graph & Graph RAG Recommender
+# Moviemaxx | Multi-Agent Movie Graph & Graph RAG Recommender
 
 Moviemaxx is a state-of-the-art conversational Bollywood movie recommendation engine powered by a **Multi-Agent System**, **Neo4j Knowledge Graph (3,022 Movies)**, **Cohere Embeddings Graph RAG**, **P2 Harness Engineering Guardrails**, and **Model Context Protocol (MCP)** integration.
 
