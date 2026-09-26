@@ -13,6 +13,16 @@
 
 ---
 
+<div align="center">
+
+<img src="assets/moviemaxx-demo.png" alt="MovieMaxx — Bollywood Film Graph Demo" width="100%" />
+
+*MovieMaxx in action — conversational movie recommendations powered by Neo4j Graph Database & Agent Memory*
+
+</div>
+
+---
+
 </div>
 
 ## 📌 Problem Statement
