@@ -207,3 +207,4 @@ neo4j-mcp/
 
 #.env
 /.env
+.env
