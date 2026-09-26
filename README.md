@@ -93,19 +93,7 @@ git clone https://github.com/gondchawarswaraj45/Moviemaxx.git
 cd Moviemaxx
 ```
 
-### 2. Configure Environment
-
-Create a `.env` file from the example template:
-
-```bash
-cp .env.example .env
-```
-
-Update `.env` with your Neo4j Aura credentials (see `.env.example` for the required variables).
-
-> ⚠️ **Important:** Never commit your `.env` file. It is already included in `.gitignore`.
-
-### 3. Set Up Neo4j Aura MCP
+### 2. Set Up Neo4j Aura MCP
 
 1. Log in to the [Neo4j Aura Console](https://console.neo4j.io/)
 2. Locate your instance ID under **Instances**
@@ -113,7 +101,7 @@ Update `.env` with your Neo4j Aura credentials (see `.env.example` for the requi
 4. Start the MCP server from your editor's MCP controls
 5. Authorize access when prompted
 
-### 4. Load the Movie Dataset
+### 3. Load the Movie Dataset
 
 Import the Bollywood movie catalog into your Neo4j instance:
 
@@ -180,12 +168,4 @@ The Agent Memory Service creates a **context graph** per user:
 
 This project was built as part of the **Neo4j Agent Memory: Build Sprint, Pune — hackFront India 2026 Pre-Hack Series**.
 
----
 
-<div align="center">
-
-**Built with ❤️ using Neo4j Graph Database**
-
-*Stories connect to stories.*
-
-</div>
