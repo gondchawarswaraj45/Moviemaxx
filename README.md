@@ -18,6 +18,9 @@ Moviemaxx is a state-of-the-art conversational Bollywood movie recommendation en
 ### 4. 3,022 Bollywood Movie Catalog Knowledge Graph (`/graph`)
 ![Movie Catalog Knowledge Graph Explorer](assets/04_movie_catalog_graph.png)
 
+### 5. Bloom Knowledge Graph Representation
+![Bloom Knowledge Graph Representation](assets/05_bloom_knowledge_graph.png)
+
 ---
 
 ## ✨ Key Features
