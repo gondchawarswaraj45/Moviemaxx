@@ -1,4 +1,4 @@
-<![CDATA[<div align="center">
+<div align="center">
 
 # 🎬 MovieMaxx
 
@@ -13,8 +13,6 @@
 
 ---
 
-<div align="center">
-
 <img src="assets/moviemaxx-demo.png" alt="MovieMaxx — Bollywood Film Graph Demo" width="100%" />
 
 *MovieMaxx in action — conversational movie recommendations powered by Neo4j Graph Database & Agent Memory*
@@ -22,8 +20,6 @@
 </div>
 
 ---
-
-</div>
 
 ## 📌 Problem Statement
 
@@ -193,4 +189,3 @@ This project was built as part of the **Neo4j Agent Memory: Build Sprint, Pune �
 *Stories connect to stories.*
 
 </div>
-]]>
