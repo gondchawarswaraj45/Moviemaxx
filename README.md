@@ -6,14 +6,17 @@ Moviemaxx is a state-of-the-art conversational Bollywood movie recommendation en
 
 ## 📸 Screenshots
 
-### 1. Multi-Agent Recommender & Social Watch Planner UI
-![Moviemaxx Recommender UI](assets/recommender-ui.png)
+### 1. Smart Movie Intelligence & Recommendations
+![Top 5 Movie Recommendations & Social Watch Vibe](assets/01_family_recommendations.png)
 
-### 2. Interactive Knowledge Graph Explorer UI (`/graph`)
-![Knowledge Graph Explorer UI](assets/graph-explorer.png)
+### 2. Moviemaxx AI Welcome Dashboard
+![Moviemaxx AI Welcome Dashboard](assets/02_welcome_dashboard.png)
 
-### 3. Movie Graph Overview
-![Moviemaxx Demo](assets/moviemaxx-demo.png)
+### 3. Metadata & Agent Skills Knowledge Graph Explorer (`/graph`)
+![Metadata & Agent Skills Graph Visualizer](assets/03_metadata_skills_graph.png)
+
+### 4. 3,022 Bollywood Movie Catalog Knowledge Graph (`/graph`)
+![Movie Catalog Knowledge Graph Explorer](assets/04_movie_catalog_graph.png)
 
 ---
 
