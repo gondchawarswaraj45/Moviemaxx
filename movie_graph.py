@@ -3,21 +3,28 @@ import json
 import os
 import re
 from pathlib import Path
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 from dotenv import load_dotenv
 from neo4j import Driver
 
+from expanded_dataset import generate_expanded_movies
 
 DATASET_PATH = Path(__file__).resolve().parent / "data" / "bollywood_famous_2010_latest_graph_ready.csv"
 load_dotenv()
 DATABASE = os.getenv("NEO4J_DATABASE", "neo4j")
 BATCH_SIZE = 150
 _catalog_loaded = False
+
+# Canonical genre overrides for inaccurate CSV entries
 GENRE_OVERRIDES = {
     "krrish 3": ["Action", "Adventure", "Sci-Fi"],
     "pk": ["Comedy", "Drama", "Sci-Fi"],
     "teri baaton mein aisa uljha jiya": ["Comedy", "Romance", "Sci-Fi"],
+    "kick": ["Action", "Comedy", "Crime"],
+    "raajneeti": ["Drama", "Crime", "Political"],
+    "rocky aur rani kii prem kahaani": ["Romance", "Comedy", "Drama"],
+    "gunjan saxena: the kargil girl": ["Drama", "Biography"],
 }
 
 CONSTRAINTS = (
@@ -60,24 +67,6 @@ MERGE (person:Person {key: role_row.key})
 ON CREATE SET person.name = role_row.name
 MERGE (movie)-[:DIRECTED_BY]->(person)
 """
-WRITER_QUERY = """
-UNWIND $rows AS row
-MATCH (movie:Movie {id: row.id})
-UNWIND row.roles AS role_row
-WITH movie, role_row WHERE role_row.role = 'writer'
-MERGE (person:Person {key: role_row.key})
-ON CREATE SET person.name = role_row.name
-MERGE (movie)-[:WRITTEN_BY]->(person)
-"""
-PRODUCER_QUERY = """
-UNWIND $rows AS row
-MATCH (movie:Movie {id: row.id})
-UNWIND row.roles AS role_row
-WITH movie, role_row WHERE role_row.role = 'producer'
-MERGE (person:Person {key: role_row.key})
-ON CREATE SET person.name = role_row.name
-MERGE (movie)-[:PRODUCED_BY]->(person)
-"""
 PLATFORM_QUERY = """
 UNWIND $rows AS row
 MATCH (movie:Movie {id: row.id})
@@ -89,11 +78,9 @@ MERGE (platform:Platform {name: row.platform})
 MERGE (movie)-[:AVAILABLE_ON]->(platform)
 """
 
-
 def _text(row: dict[str, str], key: str) -> str | None:
     value = (row.get(key) or "").strip()
     return value or None
-
 
 def _number(row: dict[str, str], key: str, integer: bool = False) -> int | float | None:
     value = _text(row, key)
@@ -105,7 +92,6 @@ def _number(row: dict[str, str], key: str, integer: bool = False) -> int | float
         return None
     return int(number) if integer else number
 
-
 def _split_names(value: str | None) -> list[str]:
     if not value:
         return []
@@ -116,10 +102,8 @@ def _split_names(value: str | None) -> list[str]:
             names.setdefault(name.casefold(), name)
     return list(names.values())
 
-
 def _person_key(name: str) -> str:
     return re.sub(r"[^a-z0-9]+", "-", name.casefold()).strip("-")
-
 
 def normalize_movie_row(row: dict[str, str]) -> dict[str, Any] | None:
     movie_id = _text(row, "movie_id")
@@ -129,10 +113,11 @@ def normalize_movie_row(row: dict[str, str]) -> dict[str, Any] | None:
 
     genres = _split_names("|".join(filter(None, (_text(row, "genre"), _text(row, "secondary_genres")))))
     canonical_title = re.sub(r"\s+-\s+Extended Graph Record \d+$", "", title, flags=re.IGNORECASE).strip().casefold()
-    genres = GENRE_OVERRIDES.get(
-        canonical_title,
-        [genre for genre in genres if genre.casefold() != "sci-fi"],
-    )
+    if canonical_title in GENRE_OVERRIDES:
+        genres = GENRE_OVERRIDES[canonical_title]
+    else:
+        genres = [g for g in genres if g.casefold() != "sci-fi"]
+
     cast_names = _split_names(_text(row, "starred_names"))
     roles = [
         {"role": role, "name": name, "key": _person_key(name)}
@@ -148,21 +133,13 @@ def normalize_movie_row(row: dict[str, str]) -> dict[str, Any] | None:
         "region": _text(row, "region"),
         "certificate": _text(row, "certificate"),
         "rating": _number(row, "imdb_rating"),
-        "criticRating": _number(row, "critic_rating"),
-        "audienceRating": _number(row, "audience_rating"),
         "runtime": _number(row, "runtime_minutes", integer=True),
         "verdict": _text(row, "verdict"),
         "theme": _text(row, "theme"),
-        "franchise": _text(row, "franchise"),
         "platform": _text(row, "ott_platform"),
-        "worldwideCollection": _number(row, "worldwide_collection_crore_inr"),
         "genres": genres,
     }
-    if canonical_title in GENRE_OVERRIDES:
-        properties["platform"] = None
     normalized_properties = {key: value for key, value in properties.items() if value is not None}
-    if canonical_title in GENRE_OVERRIDES:
-        normalized_properties["platform"] = None
     return {
         "id": movie_id,
         "properties": normalized_properties,
@@ -172,13 +149,27 @@ def normalize_movie_row(row: dict[str, str]) -> dict[str, Any] | None:
         "platform": properties["platform"],
     }
 
-
 def load_movie_rows(path: Path = DATASET_PATH) -> list[dict[str, Any]]:
-    with path.open("r", encoding="utf-8-sig", newline="") as source:
-        reader = csv.DictReader(source)
-        rows = [normalize_movie_row(row) for row in reader]
-    return [row for row in rows if row is not None]
+    csv_rows = []
+    if path.exists():
+        with path.open("r", encoding="utf-8-sig", newline="") as source:
+            reader = csv.DictReader(source)
+            csv_rows = [normalize_movie_row(row) for row in reader]
+    
+    valid_csv = [row for row in csv_rows if row is not None]
+    
+    # Merge expanded dataset (2,000+ curated records)
+    expanded = generate_expanded_movies()
+    for item in expanded:
+        props = item["properties"]
+        title_norm = props["title"].casefold()
+        if title_norm in GENRE_OVERRIDES:
+            props["genres"] = GENRE_OVERRIDES[title_norm]
+        item["cast"] = [{"name": c["name"], "key": _person_key(c["name"])} for c in item.get("cast", [])]
+        item["roles"] = [{"role": r.get("role", "director"), "name": r["name"], "key": _person_key(r["name"])} for r in item.get("roles", [])]
 
+    all_movies = valid_csv + expanded
+    return all_movies
 
 def _write_batch(tx: Any, rows: list[dict[str, Any]]) -> None:
     for query in (
@@ -186,12 +177,9 @@ def _write_batch(tx: Any, rows: list[dict[str, Any]]) -> None:
         GENRE_QUERY,
         CAST_QUERY,
         DIRECTOR_QUERY,
-        WRITER_QUERY,
-        PRODUCER_QUERY,
         PLATFORM_QUERY,
     ):
         tx.run(query, rows=rows).consume()
-
 
 def import_catalog(database: Driver, force: bool = False) -> int:
     global _catalog_loaded
@@ -208,8 +196,11 @@ def import_catalog(database: Driver, force: bool = False) -> int:
     _catalog_loaded = True
     return len(rows)
 
-
 def search_movies(database: Driver, filters: dict[str, Any]) -> list[dict[str, Any]]:
+    """
+    Executes Cypher query over Neo4j Graph database with strict genre matching
+    and graph relationship traversal.
+    """
     query = """
     MATCH (movie:Movie)
     OPTIONAL MATCH (movie)-[:HAS_GENRE]->(genre:Genre)
@@ -219,23 +210,25 @@ def search_movies(database: Driver, filters: dict[str, Any]) -> list[dict[str, A
          collect(DISTINCT genre.name) AS genres,
          collect(DISTINCT actor.name) AS cast,
          collect(DISTINCT director.name)[0] AS director
-    WHERE (size($genres) = 0 OR any(item IN genres WHERE item IN $genres))
+    WHERE (size($genres) = 0 OR any(item IN genres WHERE toLower(item) IN [g IN $genres | toLower(g)]))
       AND ($actor IS NULL OR any(name IN cast WHERE toLower(name) CONTAINS toLower($actor)))
       AND ($director IS NULL OR (director IS NOT NULL AND toLower(director) CONTAINS toLower($director)))
       AND ($year IS NULL OR movie.year = $year)
       AND ($minimum_rating IS NULL OR movie.rating >= $minimum_rating)
       AND ($platform IS NULL OR toLower(coalesce(movie.platform, '')) CONTAINS toLower($platform))
       AND ($title IS NULL OR toLower(movie.title) CONTAINS toLower($title))
-    AND ($theme IS NULL OR toLower(coalesce(movie.theme, '')) CONTAINS toLower($theme))
-    AND (size($exclude_ids) = 0 OR NOT movie.id IN $exclude_ids)
-            AND NOT movie.title CONTAINS 'Extended Graph Record'
+      AND ($theme IS NULL OR toLower(coalesce(movie.theme, '')) CONTAINS toLower($theme))
+      AND (size($exclude_ids) = 0 OR NOT movie.id IN $exclude_ids)
+      AND NOT movie.title CONTAINS 'Extended Graph Record'
     RETURN movie.id AS id, movie.title AS title, movie.year AS year,
            movie.language AS language, movie.industry AS industry,
            movie.rating AS rating, movie.runtime AS runtime,
            movie.verdict AS verdict, movie.theme AS theme,
-           movie.platform AS platform, movie.worldwideCollection AS worldwideCollection,
+           movie.platform AS platform,
            genres, cast[0..4] AS cast, director
-    ORDER BY coalesce(movie.rating, 0) DESC, movie.title ASC
+    ORDER BY 
+      CASE WHEN size($genres) > 0 AND genres[0] IN $genres THEN 1 ELSE 2 END ASC,
+      coalesce(movie.rating, 0) DESC, movie.title ASC
     LIMIT $limit
     """
     parameters = {
@@ -253,7 +246,6 @@ def search_movies(database: Driver, filters: dict[str, Any]) -> list[dict[str, A
     with database.session(database=DATABASE) as session:
         records = session.execute_read(lambda tx: list(tx.run(query, **parameters)))
     return [dict(record) for record in records]
-
 
 def save_recommendation_turn(
     database: Driver,
@@ -295,14 +287,12 @@ def save_recommendation_turn(
             ).consume()
         )
 
-
 def json_safe_filters(filters: dict[str, Any]) -> dict[str, Any]:
     return {
         key: value
         for key, value in filters.items()
         if value is None or isinstance(value, (str, int, float, bool)) or isinstance(value, list)
     }
-
 
 def recent_recommendations(database: Driver, limit: int = 6) -> list[dict[str, Any]]:
     query = """

@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#0d0f17" />
+    <title>Moviemaxx | Knowledge Graph Explorer</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@400;500;600;700&display=swap"
+        rel="stylesheet" />
+    <link rel="stylesheet" href="/static/styles.css" />
+    <!-- Vis.js Network Library for Graph Visualization -->
+    <script type="text/javascript" src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
+    <style>
+        .graph-page-container {
+            display: grid;
+            grid-template-columns: 320px 1fr;
+            height: calc(100vh - 68px);
+            overflow: hidden;
+        }
+        .graph-canvas-container {
+            position: relative;
+            background: #090b10;
+            height: calc(100vh - 68px);
+            width: 100%;
+        }
+        #network-canvas {
+            width: 100%;
+            height: 100%;
+        }
+        .graph-tab-btn {
+            background: var(--surface-card);
+            border: 1px solid var(--line);
+            color: var(--ink);
+            padding: 10px 14px;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 13px;
+            cursor: pointer;
+            text-align: left;
+            transition: all 0.2s;
+            width: 100%;
+        }
+        .graph-tab-btn.active {
+            background: rgba(139, 92, 246, 0.2);
+            border-color: var(--purple);
+            color: #c084fc;
+        }
+    </style>
+</head>
+
+<body>
+    <header class="topbar">
+        <a class="brand" href="/" aria-label="Moviemaxx home">
+            <span class="brand-mark" aria-hidden="true">🍿</span>
+            <span>Movie<span class="brand-light">maxx</span></span>
+            <span class="version-tag">GRAPH EXPLORER</span>
+        </a>
+        <div class="topbar-meta">
+            <a href="/" class="import-button" style="text-decoration:none;padding:8px 16px;font-size:12px;width:auto;margin:0;">🍿 Recommender Chat</a>
+            <span class="mcp-badge"><span class="status-dot"></span> Graph Visualizer Active</span>
+        </div>
+    </header>
+
+    <main class="graph-page-container">
+        <aside class="memory-rail">
+            <div class="rail-heading">
+                <p class="eyebrow">NEO4J & METADATA GRAPH</p>
+                <h1>Knowledge Graph<br />Explorer</h1>
+            </div>
+
+            <section class="profile-block">
+                <div class="section-kicker"><span>Select Graph Mode</span></div>
+                <div class="watch-context-selector">
+                    <button id="btn-mode-catalog" class="graph-tab-btn active">🎬 Movie Catalog Graph</button>
+                    <button id="btn-mode-metadata" class="graph-tab-btn">🧠 Metadata & Skills Graph</button>
+                </div>
+            </section>
+
+            <section class="profile-block">
+                <div class="section-kicker"><span>Legend / Node Types</span></div>
+                <div style="display:flex;flex-direction:column;gap:10px;font-size:12px;">
+                    <div style="display:flex;align-items:center;gap:8px;"><span style="width:14px;height:14px;border-radius:50%;background:#8b5cf6;"></span> Movie Node</div>
+                    <div style="display:flex;align-items:center;gap:8px;"><span style="width:14px;height:14px;border-radius:50%;background:#10b981;"></span> Genre Node</div>
+                    <div style="display:flex;align-items:center;gap:8px;"><span style="width:14px;height:14px;border-radius:50%;background:#f59e0b;"></span> Person / Actor Node</div>
+                    <div style="display:flex;align-items:center;gap:8px;"><span style="width:14px;height:14px;border-radius:50%;background:#ec4899;"></span> Platform Node</div>
+                    <div style="display:flex;align-items:center;gap:8px;"><span style="width:14px;height:14px;border-radius:50%;background:#3b82f6;"></span> Skill / Metadata Node</div>
+                </div>
+            </section>
+        </aside>
+
+        <section class="graph-canvas-container">
+            <div id="network-canvas"></div>
+        </section>
+    </main>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const btnCatalog = document.getElementById("btn-mode-catalog");
+            const btnMetadata = document.getElementById("btn-mode-metadata");
+            const container = document.getElementById("network-canvas");
+
+            let currentMode = "catalog";
+            let network = null;
+
+            async function fetchGraphData(mode) {
+                try {
+                    const res = await fetch(`/api/graph/data?mode=${mode}`);
+                    if (!res.ok) throw new Error("Failed to load graph data");
+                    return await res.json();
+                } catch (e) {
+                    console.error("Error loading graph:", e);
+                    return { nodes: [], edges: [] };
+                }
+            }
+
+            async function renderGraph(mode) {
+                currentMode = mode;
+                if (mode === "catalog") {
+                    btnCatalog.classList.add("active");
+                    btnMetadata.classList.remove("active");
+                } else {
+                    btnMetadata.classList.add("active");
+                    btnCatalog.classList.remove("active");
+                }
+
+                const data = await fetchGraphData(mode);
+
+                const nodes = (data.nodes || []).map(n => ({
+                    id: n.id,
+                    label: n.label,
+                    color: {
+                        background: n.color || "#8b5cf6",
+                        border: "#ffffff",
+                        highlight: { background: "#c084fc", border: "#ffffff" }
+                    },
+                    font: { color: "#ffffff", size: 14, face: "Plus Jakarta Sans" },
+                    shape: "dot",
+                    size: 20
+                }));
+
+                const edges = (data.edges || []).map(e => ({
+                    from: e.from,
+                    to: e.to,
+                    label: e.label,
+                    color: { color: "#4b5563", highlight: "#8b5cf6" },
+                    arrows: { to: { enabled: true, scaleFactor: 0.6 } },
+                    font: { color: "#9ca3af", size: 11 }
+                }));
+
+                const visNodes = new vis.DataSet(nodes);
+                const visEdges = new vis.DataSet(edges);
+
+                const options = {
+                    physics: {
+                        solver: "forceAtlas2Based",
+                        forceAtlas2Based: {
+                            gravitationalConstant: -50,
+                            centralGravity: 0.01,
+                            springLength: 100,
+                            springConstant: 0.08
+                        },
+                        maxVelocity: 50,
+                        minVelocity: 0.1,
+                        timestep: 0.5,
+                        stabilization: { iterations: 150 }
+                    },
+                    interaction: { hover: true, tooltipDelay: 200 }
+                };
+
+                if (network) network.destroy();
+                network = new vis.Network(container, { nodes: visNodes, edges: visEdges }, options);
+            }
+
+            btnCatalog.addEventListener("click", () => renderGraph("catalog"));
+            btnMetadata.addEventListener("click", () => renderGraph("metadata"));
+
+            renderGraph("catalog");
+        });
+    </script>
+</body>
+
+</html>

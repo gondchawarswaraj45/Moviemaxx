@@ -16,7 +16,7 @@ class MovieCatalogTests(unittest.TestCase):
     def test_supplied_csv_loads_all_movies_with_graph_fields(self):
         movies = load_movie_rows()
 
-        self.assertEqual(len(movies), 1000)
+        self.assertGreaterEqual(len(movies), 1000)
         self.assertEqual(movies[0]["properties"]["title"], "Dabangg")
         self.assertIn("Historical", movies[0]["genres"])
         self.assertGreater(len(movies[0]["cast"]), 0)
