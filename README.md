@@ -1,171 +1,95 @@
-<div align="center">
+# 🍿 Moviemaxx PRO 2.0 | Multi-Agent Movie Graph & Graph RAG Recommender
 
-# 🎬 MovieMaxx
-
-### **Bollywood Film Graph — Context-Aware Movie Recommendation System**
-
-[![Neo4j](https://img.shields.io/badge/Neo4j-Aura-008CC1?style=for-the-badge&logo=neo4j&logoColor=white)](https://neo4j.com/product/auradb/)
-[![Cypher](https://img.shields.io/badge/Cypher-Query%20Language-4581C3?style=for-the-badge)](https://neo4j.com/docs/cypher-manual/)
-[![MCP](https://img.shields.io/badge/MCP-Agent%20Protocol-FF6F00?style=for-the-badge)](https://neo4j.com/)
-[![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](LICENSE)
-
-> A graph-powered, context-aware movie recommendation engine built on **Neo4j** that models **1,000+ Bollywood films** across **19 genres** — leveraging knowledge graph traversals, AI agent integration, and persistent memory for intelligent, personalized movie discovery.
+Moviemaxx is a state-of-the-art conversational Bollywood movie recommendation engine powered by a **Multi-Agent System**, **Neo4j Knowledge Graph (3,022 Movies)**, **Cohere Embeddings Graph RAG**, **P2 Harness Engineering Guardrails**, and **Model Context Protocol (MCP)** integration.
 
 ---
 
-<img src="assets/moviemaxx-demo.png" alt="MovieMaxx — Bollywood Film Graph Demo" width="100%" />
+## 📸 Screenshots
 
-*MovieMaxx in action — conversational movie recommendations powered by Neo4j Graph Database & Agent Memory*
+### 1. Multi-Agent Recommender & Social Watch Planner UI
+![Moviemaxx Recommender UI](assets/recommender-ui.png)
 
-</div>
+### 2. Interactive Knowledge Graph Explorer UI (`/graph`)
+![Knowledge Graph Explorer UI](assets/graph-explorer.png)
 
----
-
-## 📌 Problem Statement
-
-**Context-Aware Customer Support Agent** — Traditional movie recommendation systems rely on flat databases and simple filtering. They fail to capture the rich, interconnected relationships between movies, actors, directors, genres, and streaming platforms. MovieMaxx solves this by treating the entire Bollywood film ecosystem as a **knowledge graph**, enabling multi-hop relationship discovery and context-aware, conversational recommendations.
-
----
-
-## 🌟 Key Features
-
-| Feature | Description |
-|---------|-------------|
-| 🎯 **Graph-Based Recommendations** | Traverse multi-hop relationships between movies, actors, directors, and genres for deep, meaningful suggestions |
-| 🧠 **Persistent Agent Memory** | Neo4j Agent Memory Service remembers user preferences, past searches, and interaction history across sessions |
-| 💬 **Conversational AI Interface** | Natural language queries powered by Neo4j MCP — ask questions like *"Recommend highly rated thriller movies"* |
-| 📊 **1,000+ Film Catalog** | Comprehensive Bollywood movie database with IMDb ratings, cast, directors, and streaming availability |
-| 🎭 **19 Connected Genres** | Action, Adventure, Biography, Comedy, Coming-of-Age, Crime, Drama, Family, Historical, Horror, Musical, Mystery, and more |
-| 📺 **Streaming Platform Info** | Know where to watch — JioCinema, Prime Video, Sun NXT, JioHotstar, and others |
-| 📥 **CSV → Neo4j Sync** | Import and sync movie catalogs from CSV directly into the graph database |
-| 🔍 **Extended Graph Records** | Rich metadata per film including graph record IDs, ratings, genre tags, and streaming links |
+### 3. Movie Graph Overview
+![Moviemaxx Demo](assets/moviemaxx-demo.png)
 
 ---
 
-## 🏗️ Architecture
+## ✨ Key Features
 
-```
-┌──────────────────┐       ┌──────────────────────┐       ┌─────────────────────┐
-│                  │       │                      │       │                     │
-│   User / Agent   │──────▶│   Neo4j Aura MCP     │──────▶│   Neo4j Aura DB     │
-│   (Natural Lang) │       │   (Model Context     │       │   (Graph Database)  │
-│                  │       │    Protocol)          │       │                     │
-└──────────────────┘       └──────────────────────┘       └─────────────────────┘
-                                    │                              │
-                                    ▼                              ▼
-                           ┌──────────────────┐          ┌──────────────────────┐
-                           │  Agent Memory    │          │  Knowledge Graph     │
-                           │  Service         │          │  ├── Movies (1,000+) │
-                           │  ├── Preferences │          │  ├── Persons (Cast)  │
-                           │  ├── History     │          │  ├── Directors       │
-                           │  └── Context     │          │  ├── Genres (19)     │
-                           └──────────────────┘          │  └── Streaming Info  │
-                                                         └──────────────────────┘
+1. **3,022 Bollywood Movie Knowledge Graph**: Connected nodes for `Movie`, `Genre`, `Person` (Cast & Directors), `Platform` (OTT services), `Viewer`, and `RecommendationTurn`.
+2. **Multi-Agent System**:
+   - 🛡️ **GuardrailAgent**: Audits prompts against P2 Harness Engineering safety rules (jailbreak defense, Cypher injection protection).
+   - 🎬 **RecommenderAgent**: Hybrid Graph RAG recommender returning top 5 candidate movies.
+   - 🍿 **StreamingAgent**: OTT platform navigation specialist (Netflix, Prime Video, JioCinema, ZEE5, SonyLIV, Sun NXT, Disney+ Hotstar).
+   - 👨‍👩‍👧‍👦 **WatchPlannerAgent**: Social experience planner (`solo`, `family`, `friend`, `life partner`).
+   - ✳ **CoordinatorAgent**: Master multi-agent orchestrator.
+3. **Graph RAG Hybrid Fusion**: Combines Neo4j Cypher Graph Traversal with Cohere API `embed-english-v3.0` vector similarity over 3,000+ relative text dataset chunks.
+4. **Interactive Knowledge Graph Explorer (`/graph`)**: Web page for visual graph exploration with dual tabs: **Movie Catalog Graph** and **Metadata & Skills Graph**.
+5. **FastAPI OpenAPI Diagnostic Test Suite (`/docs`)**: In-browser API tests for Neo4j, Groq LLM, Cohere Embeddings, and Vector Search index.
+6. **Data Explainability & Provenance**: Quantitative hybrid score breakdown ($0\text{--}100\%$) and graph relationship lineage (`HAS_GENRE`, `FEATURES`, `AVAILABLE_ON`).
+7. **Logging System**: Structured logging to `logs/moviemaxx.log` (ignored by Git).
+
+---
+
+## 🏗️ Architecture & Documentation Links
+
+- 📐 **[ARCHITECTURE.md](ARCHITECTURE.md)** — Detailed multi-agent system design, Graph RAG pipeline formulas, and MCP protocol architecture.
+- 🔍 **[DATA_EXPLAINABILITY.md](DATA_EXPLAINABILITY.md)** — Knowledge graph node schemas, data provenance, scoring breakdown, and conversational memory lineage.
+- 🛠️ **[PROCEDURES.md](PROCEDURES.md)** — Setup guide, catalog re-syncing procedure, test execution, and deployment instructions.
+- 🧩 **[SKILLS.md](SKILLS.md)** — Catalog of executable agent skills and API metadata definitions.
+
+---
+
+## 🚀 Quickstart Guide
+
+### 1. Installation & Environment
+
+```powershell
+python -m venv .venv
+.venv\Scripts\Activate.ps1
+python -m pip install -r requirements.txt
 ```
 
----
+### 2. Configure Credentials (`.env`)
 
-## 🛠️ Tech Stack
+Edit your `.env` file:
 
-| Layer | Technology | Purpose |
-|-------|-----------|---------|
-| **Database** | [Neo4j Aura](https://neo4j.com/product/auradb/) | Cloud-hosted graph database |
-| **Query Language** | Cypher | Graph traversal & pattern matching |
-| **Agent Protocol** | Neo4j Aura MCP | AI agent ↔ database communication |
-| **Memory** | Neo4j Agent Memory Service | Persistent user context & preferences |
-| **Data Pipeline** | CSV → Neo4j Import | Bulk catalog ingestion |
-| **Environment** | GitHub Codespaces / VS Code | Development & deployment |
+```dotenv
+NEO4J_URI="neo4j+s://your-instance.databases.neo4j.io"
+NEO4J_USERNAME="neo4j"
+NEO4J_PASSWORD="your-password"
+NEO4J_DATABASE="neo4j"
 
----
+GROQ_API_KEY="your-groq-api-key"
+GROQ_MODEL="llama-3.3-70b-versatile"
 
-## ⚡ Getting Started
-
-### Prerequisites
-
-- [Neo4j Aura](https://neo4j.com/product/auradb/) account (Free tier available)
-- [VS Code](https://code.visualstudio.com/) or GitHub Codespaces
-- Git
-
-### 1. Clone the Repository
-
-```bash
-git clone https://github.com/gondchawarswaraj45/Moviemaxx.git
-cd Moviemaxx
+COHERE_API_KEY="your-cohere-api-key"
+COHERE_EMBED_MODEL="embed-english-v3.0"
 ```
 
-### 2. Set Up Neo4j Aura MCP
+### 3. Launch Server & Re-Sync Catalog
 
-1. Log in to the [Neo4j Aura Console](https://console.neo4j.io/)
-2. Locate your instance ID under **Instances**
-3. Update the MCP configuration in `.vscode/mcp.json` with your instance ID
-4. Start the MCP server from your editor's MCP controls
-5. Authorize access when prompted
+Launch the FastAPI application:
 
-### 3. Load the Movie Dataset
-
-Import the Bollywood movie catalog into your Neo4j instance:
-
-```bash
-# Use the CSV sync feature to import the dataset
-# Or load the Neo4j example movie dataset:
+```powershell
+python -m uvicorn app:app --reload --port 8000
 ```
 
-```cypher
-:play movies
-```
+- **Recommender Web UI**: `http://127.0.0.1:8000`
+- **Knowledge Graph Explorer UI**: `http://127.0.0.1:8000/graph`
+- **FastAPI OpenAPI Docs**: `http://127.0.0.1:8000/docs`
+
+Click **"↻ Sync CSV & RAG Index"** in the sidebar or send `POST /api/import` to ingest all 3,022 movies into Neo4j!
 
 ---
 
-## 🔍 How It Works
+## 🧪 Running Unit & Integration Tests
 
-### Graph Data Model
+Run the complete 23-test diagnostic suite:
 
+```powershell
+python -m unittest discover -s tests -v
 ```
-(:Person)-[:ACTED_IN]->(:Movie)-[:IN_GENRE]->(:Genre)
-(:Person)-[:DIRECTED]->(:Movie)-[:AVAILABLE_ON]->(:Platform)
-(:Movie)-[:HAS_RATING {score: 9.1}]->(:Rating)
-```
-
-### Conversational Recommendations
-
-MovieMaxx uses Neo4j's MCP to understand natural language queries and translate them into graph traversals:
-
-| User Query | What Happens Behind the Scenes |
-|-----------|-------------------------------|
-| *"Recommend highly rated thriller movies"* | Traverses `Movie→Genre` relationships, filters by IMDb rating |
-| *"Find movies of Shahrukh Khan"* | Finds `Person` node, traverses `ACTED_IN` relationships |
-| *"Show me more like those"* | Uses Agent Memory to recall prior recommendations and find similar patterns |
-
-### Persistent Memory
-
-The Agent Memory Service creates a **context graph** per user:
-- 🔄 Remembers previous searches and recommendations
-- 📈 Learns preferences over time
-- 🎯 Delivers increasingly personalized suggestions with each interaction
-
----
-
-## 👥 Team Sinhgad
-
-| Name | Role |
-|------|------|
-| **Swaraj Gondchawar** | Team Lead |
-| **Siddhesh Asati** | Team Member |
-| **Vishal Auti** | Team Member |
-
----
-
-## 📚 Resources
-
-- [Neo4j GraphAcademy](https://graphacademy.neo4j.com/) — Free hands-on graph database courses
-- [Cypher Manual](https://neo4j.com/docs/cypher-manual/) — Query language reference
-- [Neo4j Aura Documentation](https://neo4j.com/docs/aura/) — Cloud database docs
-- [Neo4j Community](https://community.neo4j.com/) — Developer community forum
-
----
-
-## 📝 License
-
-This project was built as part of the **Neo4j Agent Memory: Build Sprint, Pune — hackFront India 2026 Pre-Hack Series**.
-
-
