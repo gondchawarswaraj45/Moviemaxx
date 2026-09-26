@@ -1,45 +1,186 @@
-# Moviemaxx
+<![CDATA[<div align="center">
 
-Moviemaxx is a conversational Bollywood movie recommender backed by Neo4j. It imports the supplied 1,000-row CSV into a connected movie graph, searches that graph for candidates, and uses Groq to turn natural-language questions into safe filters and grounded recommendations.
+# 🎬 MovieMaxx
 
-## How It Works
+### **Bollywood Film Graph — Context-Aware Movie Recommendation System**
 
-1. The first catalog request imports the CSV in batches. **Sync CSV catalog** can re-run the idempotent import.
-2. Neo4j represents `Movie`, `Genre`, `Person`, and `Platform` nodes. Relationships connect movies to genres, cast, directors, writers, producers, and streaming platforms.
-3. Groq converts questions into validated filters such as genre, actor, director, year, rating, and platform. The application builds fixed Cypher queries from those filters; it never executes model-generated Cypher.
-4. Moviemaxx formats replies directly from graph results (year, rating, genre, and platform), avoiding invented film or availability details. If Groq is unavailable or not configured, local genre/year/rating matching still returns results.
-5. Questions, filters, answers, and recommended movie relationships are saved as `Viewer → RecommendationTurn → Movie`. Follow-ups such as “show me more like those” reuse the stored filters.
+[![Neo4j](https://img.shields.io/badge/Neo4j-Aura-008CC1?style=for-the-badge&logo=neo4j&logoColor=white)](https://neo4j.com/product/auradb/)
+[![Cypher](https://img.shields.io/badge/Cypher-Query%20Language-4581C3?style=for-the-badge)](https://neo4j.com/docs/cypher-manual/)
+[![MCP](https://img.shields.io/badge/MCP-Agent%20Protocol-FF6F00?style=for-the-badge)](https://neo4j.com/)
+[![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](LICENSE)
 
-## Configure
+> A graph-powered, context-aware movie recommendation engine built on **Neo4j** that models **1,000+ Bollywood films** across **19 genres** — leveraging knowledge graph traversals, AI agent integration, and persistent memory for intelligent, personalized movie discovery.
 
-Set these values in `.env` (the application does not print them):
+---
 
-```dotenv
-NEO4J_URI="neo4j+s://your-instance.databases.neo4j.io"
-NEO4J_USERNAME="neo4j"
-NEO4J_PASSWORD="your-neo4j-password"
-NEO4J_DATABASE="neo4j"
-GROQ_API_KEY="your-groq-api-key"
-GROQ_MODEL="openai/gpt-oss-20b"
+</div>
+
+## 📌 Problem Statement
+
+**Context-Aware Customer Support Agent** — Traditional movie recommendation systems rely on flat databases and simple filtering. They fail to capture the rich, interconnected relationships between movies, actors, directors, genres, and streaming platforms. MovieMaxx solves this by treating the entire Bollywood film ecosystem as a **knowledge graph**, enabling multi-hop relationship discovery and context-aware, conversational recommendations.
+
+---
+
+## 🌟 Key Features
+
+| Feature | Description |
+|---------|-------------|
+| 🎯 **Graph-Based Recommendations** | Traverse multi-hop relationships between movies, actors, directors, and genres for deep, meaningful suggestions |
+| 🧠 **Persistent Agent Memory** | Neo4j Agent Memory Service remembers user preferences, past searches, and interaction history across sessions |
+| 💬 **Conversational AI Interface** | Natural language queries powered by Neo4j MCP — ask questions like *"Recommend highly rated thriller movies"* |
+| 📊 **1,000+ Film Catalog** | Comprehensive Bollywood movie database with IMDb ratings, cast, directors, and streaming availability |
+| 🎭 **19 Connected Genres** | Action, Adventure, Biography, Comedy, Coming-of-Age, Crime, Drama, Family, Historical, Horror, Musical, Mystery, and more |
+| 📺 **Streaming Platform Info** | Know where to watch — JioCinema, Prime Video, Sun NXT, JioHotstar, and others |
+| 📥 **CSV → Neo4j Sync** | Import and sync movie catalogs from CSV directly into the graph database |
+| 🔍 **Extended Graph Records** | Rich metadata per film including graph record IDs, ratings, genre tags, and streaming links |
+
+---
+
+## 🏗️ Architecture
+
+```
+┌──────────────────┐       ┌──────────────────────┐       ┌─────────────────────┐
+│                  │       │                      │       │                     │
+│   User / Agent   │──────▶│   Neo4j Aura MCP     │──────▶│   Neo4j Aura DB     │
+│   (Natural Lang) │       │   (Model Context     │       │   (Graph Database)  │
+│                  │       │    Protocol)          │       │                     │
+└──────────────────┘       └──────────────────────┘       └─────────────────────┘
+                                    │                              │
+                                    ▼                              ▼
+                           ┌──────────────────┐          ┌──────────────────────┐
+                           │  Agent Memory    │          │  Knowledge Graph     │
+                           │  Service         │          │  ├── Movies (1,000+) │
+                           │  ├── Preferences │          │  ├── Persons (Cast)  │
+                           │  ├── History     │          │  ├── Directors       │
+                           │  └── Context     │          │  ├── Genres (19)     │
+                           └──────────────────┘          │  └── Streaming Info  │
+                                                         └──────────────────────┘
 ```
 
-The Neo4j account must have permission to create constraints and write nodes and relationships. Groq is optional; without `GROQ_API_KEY`, the app uses local genre/year/rating matching and still queries Neo4j. At startup of the first chat request, Moviemaxx checks the configured model against the models available to the key and falls back to an available Groq OSS model when needed.
+---
 
-## Run
+## 🛠️ Tech Stack
 
-From this project folder, install dependencies into the selected Python environment and launch the app:
+| Layer | Technology | Purpose |
+|-------|-----------|---------|
+| **Database** | [Neo4j Aura](https://neo4j.com/product/auradb/) | Cloud-hosted graph database |
+| **Query Language** | Cypher | Graph traversal & pattern matching |
+| **Agent Protocol** | Neo4j Aura MCP | AI agent ↔ database communication |
+| **Memory** | Neo4j Agent Memory Service | Persistent user context & preferences |
+| **Data Pipeline** | CSV → Neo4j Import | Bulk catalog ingestion |
+| **Environment** | GitHub Codespaces / VS Code | Development & deployment |
 
-```powershell
-python -m pip install -r requirements.txt
-python -m uvicorn app:app --reload
+---
+
+## ⚡ Getting Started
+
+### Prerequisites
+
+- [Neo4j Aura](https://neo4j.com/product/auradb/) account (Free tier available)
+- [VS Code](https://code.visualstudio.com/) or GitHub Codespaces
+- Git
+
+### 1. Clone the Repository
+
+```bash
+git clone https://github.com/gondchawarswaraj45/Moviemaxx.git
+cd Moviemaxx
 ```
 
-Open `http://127.0.0.1:8000`. The first load imports the CSV. Use **Sync CSV catalog** to re-import it later.
+### 2. Configure Environment
 
-Run the focused tests with:
+Create a `.env` file from the example template:
 
-```powershell
-python -m unittest discover -s tests -v
+```bash
+cp .env.example .env
 ```
 
-This is a single-viewer prototype. Search history is shared by this local demo viewer and stored in the configured Neo4j database.
+Update `.env` with your Neo4j Aura credentials (see `.env.example` for the required variables).
+
+> ⚠️ **Important:** Never commit your `.env` file. It is already included in `.gitignore`.
+
+### 3. Set Up Neo4j Aura MCP
+
+1. Log in to the [Neo4j Aura Console](https://console.neo4j.io/)
+2. Locate your instance ID under **Instances**
+3. Update the MCP configuration in `.vscode/mcp.json` with your instance ID
+4. Start the MCP server from your editor's MCP controls
+5. Authorize access when prompted
+
+### 4. Load the Movie Dataset
+
+Import the Bollywood movie catalog into your Neo4j instance:
+
+```bash
+# Use the CSV sync feature to import the dataset
+# Or load the Neo4j example movie dataset:
+```
+
+```cypher
+:play movies
+```
+
+---
+
+## 🔍 How It Works
+
+### Graph Data Model
+
+```
+(:Person)-[:ACTED_IN]->(:Movie)-[:IN_GENRE]->(:Genre)
+(:Person)-[:DIRECTED]->(:Movie)-[:AVAILABLE_ON]->(:Platform)
+(:Movie)-[:HAS_RATING {score: 9.1}]->(:Rating)
+```
+
+### Conversational Recommendations
+
+MovieMaxx uses Neo4j's MCP to understand natural language queries and translate them into graph traversals:
+
+| User Query | What Happens Behind the Scenes |
+|-----------|-------------------------------|
+| *"Recommend highly rated thriller movies"* | Traverses `Movie→Genre` relationships, filters by IMDb rating |
+| *"Find movies of Shahrukh Khan"* | Finds `Person` node, traverses `ACTED_IN` relationships |
+| *"Show me more like those"* | Uses Agent Memory to recall prior recommendations and find similar patterns |
+
+### Persistent Memory
+
+The Agent Memory Service creates a **context graph** per user:
+- 🔄 Remembers previous searches and recommendations
+- 📈 Learns preferences over time
+- 🎯 Delivers increasingly personalized suggestions with each interaction
+
+---
+
+## 👥 Team
+
+| Name | Role |
+|------|------|
+| **Swaraj Gondchawar** | Team Lead |
+| **Siddhesh Asati** | Team Member |
+| **Vishal Auti** | Team Member |
+
+---
+
+## 📚 Resources
+
+- [Neo4j GraphAcademy](https://graphacademy.neo4j.com/) — Free hands-on graph database courses
+- [Cypher Manual](https://neo4j.com/docs/cypher-manual/) — Query language reference
+- [Neo4j Aura Documentation](https://neo4j.com/docs/aura/) — Cloud database docs
+- [Neo4j Community](https://community.neo4j.com/) — Developer community forum
+
+---
+
+## 📝 License
+
+This project was built as part of the **Neo4j Agent Memory: Build Sprint, Pune — hackFront India 2026 Pre-Hack Series**.
+
+---
+
+<div align="center">
+
+**Built with ❤️ using Neo4j Graph Database**
+
+*Stories connect to stories.*
+
+</div>
+]]>

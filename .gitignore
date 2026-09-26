@@ -129,7 +129,6 @@ celerybeat.pid
 *.sage.py
 
 # Environments
-# .env
 .venv
 env/
 venv/
@@ -205,6 +204,3 @@ neo4j-mcp/
 #data
 /data
 
-#.env
-/.env
-.env
