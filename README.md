@@ -157,7 +157,7 @@ The Agent Memory Service creates a **context graph** per user:
 
 ---
 
-## 👥 Team
+## 👥 Team Sinhgad
 
 | Name | Role |
 |------|------|
