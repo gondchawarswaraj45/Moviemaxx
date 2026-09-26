@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#f1f2eb" />
+    <title>Moviemaxx | Movie Graph Recommender</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+        href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,500;9..144,600&display=swap"
+        rel="stylesheet" />
+    <link rel="stylesheet" href="/static/styles.css" />
+    <script src="/static/app.js" defer></script>
+</head>
+
+<body>
+    <header class="topbar">
+        <a class="brand" href="/" aria-label="Moviemaxx home">
+            <span class="brand-mark" aria-hidden="true">M</span>
+            <span>Movie<span class="brand-light">maxx</span></span>
+        </a>
+        <div class="topbar-meta">
+            <span class="demo-label">BOLLYWOOD FILM GRAPH</span>
+            <span id="connection-status" class="connection-status" aria-live="polite">
+                <span class="status-dot"></span> Connecting to Neo4j
+            </span>
+        </div>
+    </header>
+
+    <main class="workspace">
+        <aside class="memory-rail" aria-label="Movie graph and recent searches">
+            <div class="rail-heading">
+                <div>
+                    <p class="eyebrow">THE MOVIEMAXX GRAPH</p>
+                    <h1>Stories connect<br />to stories.</h1>
+                </div>
+                <span class="avatar" aria-hidden="true">M</span>
+            </div>
+
+            <section class="profile-block" aria-labelledby="catalog-title">
+                <div class="section-kicker"><span id="catalog-title">Catalog</span><span class="profile-tag">CSV →
+                        NEO4J</span></div>
+                <div class="catalog-numbers">
+                    <strong id="movie-count">—</strong>
+                    <span>films<br />connected</span>
+                </div>
+                <p id="catalog-caption" class="muted">Reading the movie graph…</p>
+                <button id="import-button" class="import-button" type="button"
+                    title="Import the CSV catalog into Neo4j">
+                    <span aria-hidden="true">↻</span> Sync CSV catalog
+                </button>
+            </section>
+
+            <section class="memory-block" aria-labelledby="genre-title">
+                <div class="section-kicker">
+                    <span id="genre-title">Explore a genre</span>
+                    <span id="genre-count" class="count-tag">— GENRES</span>
+                </div>
+                <div id="genre-list" class="genre-list" aria-label="Movie genres"></div>
+            </section>
+
+            <section class="recent-block" aria-labelledby="recent-title">
+                <div class="section-kicker"><span id="recent-title">Your recent searches</span></div>
+                <div id="recent-list" class="recent-list">
+                    <p class="recent-empty">Your questions and recommendations will be remembered here.</p>
+                </div>
+            </section>
+
+            <div class="rail-footer" aria-label="Graph node types">
+                <span class="graph-key"><i class="key-movie"></i>Movie</span>
+                <span class="graph-key"><i class="key-genre"></i>Genre</span>
+                <span class="graph-key"><i class="key-person"></i>People</span>
+                <span class="graph-key"><i class="key-platform"></i>Platform</span>
+            </div>
+        </aside>
+
+        <section class="support-panel" aria-label="Movie recommendations">
+            <div class="conversation-header">
+                <div>
+                    <p class="eyebrow">GRAPH RECOMMENDATIONS <span class="eyebrow-divider">/</span> BOLLYWOOD</p>
+                    <h2>Ask Moviemaxx</h2>
+                </div>
+                <div class="agent-chip"><span class="agent-spark" aria-hidden="true">✳</span><span
+                        id="agent-mode">Checking Groq</span></div>
+            </div>
+
+            <div id="retrieval-banner" class="retrieval-banner" hidden aria-live="polite"></div>
+
+            <div id="conversation" class="conversation" aria-live="polite" aria-label="Recommendation conversation">
+                <div class="welcome-state">
+                    <div class="welcome-rule"></div>
+                    <p class="eyebrow">A BETTER WAY TO PICK A FILM</p>
+                    <h3>Find your next<br /><em>favorite story.</em></h3>
+                    <p>Ask for a genre, a performer, a mood, or a year. Moviemaxx searches connected movies, people, and
+                        genres in Neo4j, then grounds its picks in the catalog's ratings and details.</p>
+                    <div class="welcome-prompts" aria-label="Example questions">
+                        <button class="suggestion-button" data-question="Recommend highly rated thriller movies"
+                            type="button">
+                            <span class="suggestion-index">01</span><span>Highly rated thrillers</span><span
+                                class="suggestion-arrow" aria-hidden="true">↗</span>
+                        </button>
+                        <button class="suggestion-button" data-question="Find me a comedy from 2015" type="button">
+                            <span class="suggestion-index">02</span><span>A comedy from 2015</span><span
+                                class="suggestion-arrow" aria-hidden="true">↗</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="composer-wrap">
+                <div class="follow-up-prompts">
+                    <button class="prompt-chip" data-question="Show me more like those" type="button">More like those
+                        <span aria-hidden="true">↗</span></button>
+                    <span class="composer-note">Questions and recommendations are saved to your Neo4j graph.</span>
+                </div>
+                <form id="chat-form" class="composer">
+                    <label class="sr-only" for="message-input">Ask Moviemaxx about movies</label>
+                    <textarea id="message-input" rows="1" maxlength="1500"
+                        placeholder="Try “Find me a smart action film on Netflix”" required></textarea>
+                    <button id="send-button" class="send-button" type="submit" aria-label="Ask Moviemaxx"
+                        title="Ask Moviemaxx">
+                        <span aria-hidden="true">↑</span>
+                    </button>
+                </form>
+            </div>
+        </section>
+    </main>
+</body>
+
+</html>

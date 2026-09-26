@@ -1,3 +1,4 @@
+.env
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -199,3 +200,10 @@ neo4j-mcp/
 # neo4j skills
 .agents/skills/neo4j*
 /skills-lock.json
+
+
+#data
+/data
+
+#.env
+/.env
