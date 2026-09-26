@@ -39,7 +39,8 @@ Moviemaxx is a state-of-the-art conversational Bollywood movie recommendation en
 
 ## 🏗️ Architecture & Documentation Links
 
-- 📐 **[ARCHITECTURE.md](ARCHITECTURE.md)** — Detailed multi-agent system design, Graph RAG pipeline formulas, and MCP protocol architecture.
+- 📐 **[ARCHITECTURE.md](ARCHITECTURE.md)** — Detailed system design, User Architecture, Graph RAG pipeline formulas, Neo4j working architecture, and Procedural Architecture.
+- 🤖 **[MULTI_AGENT_ARCHITECTURE.md](MULTI_AGENT_ARCHITECTURE.md)** — In-depth multi-agent usecase, hub-and-spoke topology, agent-to-agent communication protocol, JSON payload schemas, and skill registry.
 - 🔍 **[DATA_EXPLAINABILITY.md](DATA_EXPLAINABILITY.md)** — Knowledge graph node schemas, data provenance, scoring breakdown, and conversational memory lineage.
 - 🛠️ **[PROCEDURES.md](PROCEDURES.md)** — Setup guide, catalog re-syncing procedure, test execution, and deployment instructions.
 - 🧩 **[SKILLS.md](SKILLS.md)** — Catalog of executable agent skills and API metadata definitions.

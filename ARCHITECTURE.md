@@ -2,6 +2,8 @@
 
 Moviemaxx is an enterprise-grade, conversational Bollywood movie recommender powered by a **Multi-Agent Architecture**, **Neo4j Knowledge Graph (3,022 Movies)**, **Cohere Embeddings Graph RAG**, **P2 Harness Engineering Guardrails**, and **Model Context Protocol (MCP)** integration.
 
+> 🤖 **Detailed Multi-Agent Architecture**: For agent-to-agent communication protocols, hub-and-spoke sequence diagrams, JSON payload contracts, and skill registry specifications, see **[MULTI_AGENT_ARCHITECTURE.md](MULTI_AGENT_ARCHITECTURE.md)**.
+
 ---
 
 ## 1. System Architecture
